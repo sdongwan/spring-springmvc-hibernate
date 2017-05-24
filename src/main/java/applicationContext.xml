@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="students" class="entity.Students">
+        <property name="id" value="1"/>
+        <property name="name" value="songdongwan"/>
+        <property name="major" value="网络工程"/>
+        <property name="gender" value="男"/>
+    </bean>
+
+    <bean id="studentsService" class="service.StudentsService"/>
+
+    <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+        <property name="password" value="sdongwan"/>
+        <property name="username" value="root"/>
+        <property name="url" value="jdbc:mysql://localhost:3306/spring3"/>
+    </bean>
+
+
+    <bean id="sessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="configLocation" value="classpath:hibernate.cfg.xml"/>
+        <property name="mappingLocations" value="classpath:students.hbm.xml"/>
+
+    </bean>
+
+    <bean id="hibernateTransactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+
+    <bean id="transactionProxy" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean"
+          abstract="true">
+
+        <property name="transactionManager" ref="hibernateTransactionManager"/>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="add*">PROPAGATION_REQUIRED,-Exception</prop>
+                <prop key="modify*">PROPAGATION_REQUIRED,-myException</prop>
+                <prop key="del*">PROPAGATION_REQUIRED</prop>
+                <prop key="*">PROPAGATION_REQUIRED</prop>
+            </props>
+        </property>
+    </bean>
+</beans>
